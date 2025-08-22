@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minivenebi.ge - მინივენით მომსახურება</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .hero-bg {
+            background-image: url('https://github.com/aroshidze/minivenebi/blob/main/Gemini_Generated_Image_3vlu6l3vlu6l3vlu.png?raw=true');
+            background-size: cover;
+            background-position: center;
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .georgian-text {
+            font-family: 'Noto Sans Georgian', sans-serif;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content {
+             transform: scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            background-color: #f1f1f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+         .modal-close:hover {
+            background-color: #e1e1e1;
+        }
+        .thumbnail {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #3B82F6; /* blue-600 */
+        }
+        .destination-filter {
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+        }
+        .destination-filter.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <a href="/" class="flex-shrink-0">
+                <img src="http://minivenebi.ge/templates/minivenebi/images/logo.png" alt="Minivenebi.ge Logo" class="h-10 sm:h-12"/>
+            </a>
+            
+            <!-- Desktop Navigation (lg and up) -->
+            <div class="hidden lg:flex items-center">
+                <nav class="flex items-center space-x-6 georgian-text">
+                    <a href="#services" class="smooth-scroll text-gray-600 hover:text-blue-600">მომსახურება</a>
+                    <a href="#fleet" class="smooth-scroll text-gray-600 hover:text-blue-600">ავტომობილები</a>
+                    <a href="#destinations" class="smooth-scroll text-gray-600 hover:text-blue-600">მიმართულებები</a>
+                    <a href="#contact" class="smooth-scroll text-gray-600 hover:text-blue-600">კონტაქტი</a>
+                </nav>
+                <div class="flex items-center space-x-2 ml-6">
+                    <a href="https://wa.me/995555027040" target="_blank" class="btn bg-green-500 text-white p-2 rounded-lg" aria-label="WhatsApp">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.52-5.687-1.475L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.447-4.435-9.887-9.888-9.888-5.448 0-9.886 4.434-9.889 9.886-.001 2.225.651 4.315 1.731 6.086l.474.852-.719 2.663 2.803-.732.867.515z"/></svg>
+                    </a>
+                    <a href="tel:+995555027040" class="btn bg-blue-600 text-white font-bold py-2 px-6 rounded-lg georgian-text">დაგვირეკეთ</a>
+                </div>
+            </div>
+
+            <!-- Mobile & Tablet Hamburger Button (hidden on lg and up) -->
+            <button id="mobile-menu-button" class="lg:hidden text-gray-700 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile & Tablet Menu Panel (hidden on lg and up) -->
+        <div id="mobile-menu" class="hidden lg:hidden georgian-text border-t">
+            <a href="#services" class="smooth-scroll block py-3 px-4 text-gray-700 hover:bg-gray-100">მომსახურება</a>
+            <a href="#fleet" class="smooth-scroll block py-3 px-4 text-gray-700 hover:bg-gray-100">ავტომობილები</a>
+            <a href="#destinations" class="smooth-scroll block py-3 px-4 text-gray-700 hover:bg-gray-100">მიმართულებები</a>
+            <a href="#contact" class="smooth-scroll block py-3 px-4 text-gray-700 hover:bg-gray-100">კონტაქტი</a>
+            <div class="p-4 border-t">
+                 <a href="tel:+995555027040" class="btn bg-blue-600 text-white font-bold py-3 rounded-lg w-full flex items-center justify-center mb-2">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                    დაგვირეკეთ
+                </a>
+                 <a href="https://wa.me/995555027040" target="_blank" class="btn bg-green-500 text-white font-bold py-3 rounded-lg w-full flex items-center justify-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.52-5.687-1.475L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.447-4.435-9.887-9.888-9.888-5.448 0-9.886 4.434-9.889 9.886-.001 2.225.651 4.315 1.731 6.086l.474.852-.719 2.663 2.803-.732.867.515z"/></svg>
+                    მოგვწერეთ WhatsApp-ზე
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white h-[60vh] min-h-[400px] flex items-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight georgian-text">მინივენით მომსახურება</h1>
+            <p class="text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto georgian-text">სანდო და კომფორტული მგზავრობა მთელი საქართველოს მასშტაბით.</p>
+            <a href="#fleet" class="smooth-scroll btn bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg georgian-text">ავტომობილების ნახვა</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Services Section -->
+        <section id="services" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12 georgian-text">ჩვენი სერვისები</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-50 p-8 rounded-xl text-center border">
+                        <h3 class="text-xl font-bold mb-2 georgian-text">მინივენი დაკვეთით</h3>
+                        <p class="text-gray-600 georgian-text">დაიქირავეთ მინივენი მძღოლით ნებისმიერი მიმართულებით.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl text-center border">
+                        <h3 class="text-xl font-bold mb-2 georgian-text">VIP მომსახურება</h3>
+                        <p class="text-gray-600 georgian-text">პრემიუმ კლასის მინივენები განსაკუთრებული შემთხვევებისთვის.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl text-center border">
+                        <h3 class="text-xl font-bold mb-2 georgian-text">ტრანსფერი აეროპორტიდან</h3>
+                        <p class="text-gray-600 georgian-text">დაგხვდებით თბილისისა და ქუთაისის აეროპორტებში.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Destinations Section -->
+        <section id="destinations" class="py-16 sm:py-20 bg-white border-t">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center georgian-text">აირჩიეთ მიმართულება</h2>
+                <div id="destination-filters" class="flex flex-wrap justify-center gap-2 georgian-text mb-12">
+                    <!-- Filter buttons will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Fleet Section -->
+        <section id="fleet" class="py-16 sm:py-20 bg-gray-100">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center georgian-text">ჩვენი ავტოპარკი</h2>
+                <div id="fleet-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Fleet cards will be dynamically populated here -->
+                </div>
+                <div class="text-center mt-12">
+                    <button id="load-more-btn" class="btn bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg georgian-text">მეტის ჩვენება</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 georgian-text">Minivenebi.ge</h3>
+                    <p class="text-gray-400 georgian-text">მინივენით მომსახურება 24/7.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 georgian-text">საკონტაქტო ინფორმაცია</h3>
+                    <ul class="space-y-3 text-gray-300 georgian-text">
+                        <li class="flex items-center justify-center md:justify-start"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg><a href="tel:+995555027040" class="hover:text-blue-400 transition">(+995) 555 027040</a></li>
+                        <li class="flex items-center justify-center md:justify-start"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg><a href="tel:+995557027040" class="hover:text-blue-400 transition">(+995) 557 027040</a></li>
+                        <li class="flex items-center justify-center md:justify-start"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413 0 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.52-5.687-1.475L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.447-4.435-9.887-9.888-9.888-5.448 0-9.886 4.434-9.889 9.886-.001 2.225.651 4.315 1.731 6.086l.474.852-.719 2.663 2.803-.732.867.515z"/></svg><a href="https://wa.me/995555027040" target="_blank" class="hover:text-blue-400 transition">Whatsapp</a></li>
+                        <li class="flex items-center justify-center md:justify-start"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg><a href="mailto:minivenebi.ge@gmail.com" class="hover:text-blue-400 transition">minivenebi.ge@gmail.com</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 georgian-text">სწრაფი ბმულები</h3>
+                     <ul class="space-y-2 text-gray-300 georgian-text">
+                        <li><a href="#services" class="smooth-scroll hover:text-blue-400 transition">მომსახურება</a></li>
+                        <li><a href="#fleet" class="smooth-scroll hover:text-blue-400 transition">ავტომობილები</a></li>
+                        <li><a href="#destinations" class="smooth-scroll hover:text-blue-400 transition">მიმართულებები</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-500">
+                <p>&copy; 2024 Minivenebi.ge. ყველა უფლება დაცულია.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="fleet-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modal-close-btn" class="modal-close">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4 georgian-text"></h2>
+            <div class="md:grid md:grid-cols-2 md:gap-6">
+                <div>
+                    <img id="modal-main-image" src="" alt="Minivan Image" class="w-full h-auto max-h-[50vh] object-contain rounded-lg mb-4">
+                    <div id="modal-thumbnails" class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        <!-- Thumbnails will be populated here -->
+                    </div>
+                </div>
+                <div id="modal-description" class="georgian-text text-gray-700 mt-4 md:mt-0 text-sm space-y-2">
+                    <!-- Full description will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fleetData = [
+                { title: "მინივენი დაკვეთით (2017)", details: "<b>მგზავრი:</b> 7+1", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით. გამოშვების წელი 2017, საწვავი: ბენზინი. მგზავრთა რაოდენობა 7+1.", images: ['http://minivenebi.ge/uploads/posts/2019-10/1572518777_vito.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "VIP მინივენი (2019)", details: "<b>მგზავრი:</b> 7+1", fullDescription: "<b>ქალაქი:</b> თბილისი<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> გამოშვების წელი: 2019, მგზავრთა რაოდენობა: 7+1, საწვავი: დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2019-05/1559120820_miniveni.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "მინივენი ბათუმამდე", details: "<b>მიმართულება:</b> თბილისი-ბათუმი", fullDescription: "<b>დამატებითი ინფორმაცია:</b> მინივენი ბათუმამდე.", images: ['http://minivenebi.ge/uploads/posts/2021-05/1619864849_img-20200806-wa0002.jpg'], destinations: ["ბათუმი"] },
+                { title: "მინივენის ტაქსი", details: "<b>საწვავი:</b> დიზელი", fullDescription: "<b>დამატებითი ინფორმაცია:</b> მინივენის ტაქსი დაკვეთით, საწვავი: დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2021-05/1619863931_2.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "მინივენი (10+1)", details: "<b>მგზავრი:</b> 10+1", fullDescription: "<b>საურთიერთობო ენები:</b> ქართული, რუსული<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით. მგზავრთა რაოდენობა 10+1, საწვავი დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2018-11/1542117240_3.jpg'], destinations: ["ზოგადი"] },
+                { title: "Mercedes Vito (ბათუმი)", details: "<b>მგზავრი:</b> 8+1", fullDescription: "<b>ქალაქი:</b> ბათუმი<br><b>ტელეფონი:</b> (+995) 555 027040; (+995) 557 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით, საწვავი: დიზელი, მგზავრთა რაოდენობა 8+1.", images: ['http://minivenebi.ge/uploads/posts/2018-08/1534665332_vito.jpg'], destinations: ["ბათუმი"] },
+                { title: "Mercedes Vito (2005)", details: "<b>მგზავრი:</b> 8", fullDescription: "<b>საურთიერთობო ენები:</b> ქართული, რუსული<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>დამატებითი ინფორმაცია:</b> ქირავდება მინივენი მერსედეს ვიტო მძღოლით. გამოშვების წელი 2005; მგზავრთა რაოდენობა - 8; საწვავი - დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2018-06/1528904060_minivenebi.jpg'], destinations: ["ზოგადი"] },
+                { title: "Minivan Taxi Tbilisi", details: "<b>ქალაქი:</b> თბილისი", fullDescription: "<b>ქალაქი:</b> Tbilisi<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7", images: ['http://minivenebi.ge/uploads/posts/2018-06/1528903169_miniveni.jpg'], destinations: ["თბილისი"] },
+                { title: "Mercedes Vito (2013)", details: "<b>მგზავრი:</b> 8+1", fullDescription: "<b>ქალაქი:</b> თბილისი<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენით მომსახურება. გამოშვების წელი 2013, საწვავი: დიზელი. მგზავრთა რაოდენობა 8+1.", images: ['http://minivenebi.ge/uploads/posts/2018-02/1519496181_dakvetit.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "მინივენი (2009)", details: "<b>მგზავრი:</b> 8+1", fullDescription: "<b>ქალაქი:</b> თბილისი<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით. გამოშვების წელი: 2009, საწვავი: დიზელი, მგზავრთა რაოდენობა 8+1.", images: ['http://minivenebi.ge/uploads/posts/2018-02/1519492895_miniveni.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "მინივენი დაკვეთით (2012)", details: "<b>მგზავრი:</b> 8", fullDescription: "<b>ქალაქი:</b> თბილისი<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> ქირავდება მერსედესის კომფორტული მინივენი მძღოლთან ერთად. გამოშვების წელი: 2012; სავარძელის რაოდენობა მძღოლის გარდა 8 ადგილი.", images: ['http://taqsi.ge/uploads/posts/2017-10/1506959651_gaqiraveba.jpg'], destinations: ["თბილისი", "ზოგადი"] },
+                { title: "VIP - HYUNDAI H1 (2016)", details: "<b>მგზავრი:</b> 7+1", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით - მარკა: HYUNDAI, მოდელი: H1, მგზავრთა რაოდენობა 7+1, საწვავის ტიპი: დიზელი, კონდიციონერით.", images: ['http://minivenebi.ge/uploads/posts/2016-07/1469178795_miniveni.jpg'], destinations: ["ზოგადი"] },
+                { title: "თბილისი - ბათუმი", details: "<b>ფასი:</b> 25 ლარი (1 მგზავრი)", fullDescription: "<b>ქალაქი:</b> თბილისი - ბათუმი<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>დამატებითი ინფორმაცია:</b> მინივენი თბილისი - ბათუმი და ბათუმი - თბილისის მიმართულებით. ერთი მგზავრის ღირებულებაა 25 ლარი, ერთი მიმართულებით.", images: ['http://minivenebi.ge/uploads/posts/2016-08/1471461487_taxi1.jpg'], destinations: ["ბათუმი"] },
+                { title: "Mercedes-Benz Viano", details: "<b>მგზავრი:</b> 7", fullDescription: "<b>საურთიერთობო ენები:</b> ქართული, რუსული<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> Mercedes-Benz, Viano. საწვავის ტიპი: ბენზინი/გაზი. მინივენი გათვლილია 7 მგზავრზე. მომსახურების დაკვეთა ხდება მძღოლთან ერთად.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454183203_minivenebi.jpg'], destinations: ["ზოგადი"] },
+                { title: "Mercedes-Benz Viano (8+1)", details: "<b>მგზავრი:</b> 8+1", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> Mercedes-Benz, Viano. საწვავის ტიპი: დიზელი. მინივენი გათვლილია 8+1 მგზავრზე. მომსახურების დაკვეთა ხდება მძღოლთან ერთად.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454185387_minivenebi.jpg'], destinations: ["ზოგადი"] },
+                { title: "Mercedes-Benz Viano დაკვეთით", details: "<b>მგზავრი:</b> 8+1", fullDescription: "<b>საურთიერთობო ენები:</b> ქართული, რუსული<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეტით. Mercedes-Benz, Viano. საწვავის ტიპი: ბენზინი. მინივენი გათვლილია 8+1 მგზავრზე.", images: ['http://minivenebi.ge/uploads/posts/2016-06/1465303739_minivenebi.jpg'], destinations: ["ზოგადი"] },
+                { title: "თბილისი - ერევანი", details: "<b>ფასი:</b> 300 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ერევანი. მინივენი გამოძახებით, დაქირავება. ფასი 300 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-02/1454868624_miniveni.jpg'], destinations: ["ერევანი"] },
+                { title: "თბილისი - ახალციხე", details: "<b>ფასი:</b> 200 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ახალციხე. მინივენი გამოძახებით, დაქირავება. ფასი 200 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-02/1454496702_miniveni.jpg'], destinations: ["ახალციხე"] },
+                { title: "თბილისი - ახალქალაქი", details: "<b>ფასი:</b> 200 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ახალქალაქი. მინივენი გამოძახებით, დაქირავება. ფასი 200 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-02/1454496416_miniveni.jpg'], destinations: ["ახალქალაქი"] },
+                { title: "თბილისი - ამბროლაური", details: "<b>ფასი:</b> 200 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ამბროლაური. მინივენი გამოძახებით, დაქირავება. ფასი 200 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-02/1454496222_miniveni.jpg'], destinations: ["ამბროლაური"] },
+                { title: "თბილისი - ადიგენი", details: "<b>ფასი:</b> 200 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ადიგენი. მინივენი გამოძახებით, დაქირავება. ფასი 200 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-02/1454494723_miniveni.jpg'], destinations: ["ადიგენი"] },
+                { title: "თბილისი - აბაშა", details: "<b>ფასი:</b> 170 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - აბაშა. მინივენი გამოძახებით, დაქირავება. ფასი 170 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454259427_miniveni.jpg'], destinations: ["აბაშა"] },
+                { title: "ტრანსფერი აეროპორტში", details: "<b>ფასი:</b> 50-60 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით აეროპორტის მიმართულებით ფასი 50 ლარი. მგზავრის დახვედრა 60 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454259178_miniveni.jpg'], destinations: ["თბილისის აეროპორტი"] },
+                { title: "მინივენი თბილისში", details: "<b>მგზავრი:</b> 1-8", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი დაკვეთით თბილისში. მგზავრთა რაოდენობა 1-დან 8-მდე. ავტომობილით მომსახურების დაკვეთა ხდება მძღოლთან ერთად. ფასი შეთანხმებით.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454258939_miniveni-dakvetit.jpg'], destinations: ["თბილისი"] },
+                { title: "თბილისი - ყაზბეგი", details: "<b>ფასი:</b> 180 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ყაზბეგი. მინივენი გამოძახებით, დაქირავება. ფასი 180 ლარი. მგზავრთა რაოდენობა 1-დან 8-მდე.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454237650_miniveni-dakvetit.jpg'], destinations: ["ყაზბეგი", "სტეფანწმინდა"] },
+                { title: "თბილისი - გუდაური", details: "<b>ფასი:</b> 150 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - გუდაური. მინივენი დაკვეთით, გამოძახებით. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 150 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454237369_miniveni-dakvetit.jpg'], destinations: ["გუდაური"] },
+                { title: "თბილისი - ბაკურიანი", details: "<b>ფასი:</b> 150 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ბაკურიანი. მინივენის დაკვეთა. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 150 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454236245_miniveni-dakvetit.jpg'], destinations: ["ბაკურიანი"] },
+                { title: "თბილისი - ბათუმი (220)", details: "<b>ფასი:</b> 220 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 555 027040<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ბათუმი. მინივენი გამოძახებით. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 220 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454231898_miniveni-dakvetit.jpg'], destinations: ["ბათუმი"] },
+                { title: "თბილისი - ბორჯომი", details: "<b>ფასი:</b> 120 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ბორჯომი. მინივენი გამოძახებით. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 120 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454231624_miniveni-dakvetit.jpg'], destinations: ["ბორჯომი"] },
+                { title: "თბილისი - ქუთაისი", details: "<b>ფასი:</b> 120 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - ქუთაისი. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 120 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454226067_miniveni-dakvetit.jpg'], destinations: ["ქუთაისი"] },
+                { title: "თბილისი - კოპიტნარი", details: "<b>ფასი:</b> 140 ლარი", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> თბილისი - კოპიტნარი. მგზავრთა რაოდენობა 1-დან 8-მდე. ფასი 140 ლარი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454225472_miniveni-dakvetit.jpg'], destinations: ["ქუთაისის აეროპორტი"] },
+                { title: "Mercedes-Benz Viano (VIP)", details: "<b>მგზავრი:</b> 8", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> Mercedes-Benz, Viano. მომსახურების დაკვეთა ხდება მძღოლთან ერთად. მინივენი გათვლილია 8 მგზავრზე. საწვავი: დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454186319_miniveni.jpg'], destinations: ["ზოგადი"] },
+                { title: "Mercedes-Benz Viano (2)", details: "<b>მგზავრი:</b> 8", fullDescription: "<b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> Mercedes-Benz, Viano. მომსახურების დაკვეთა ხდება მძღოლთან ერთად. მინივენი გათვლილია 8 მგზავრზე. საწვავი: დიზელი.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1453666698_minivenebi.jpg'], destinations: ["ზოგადი"] },
+                { title: "Nissan Elgrand", details: "<b>მგზავრი:</b> 7+1", fullDescription: "<b>საურთიერთობო ენები:</b> ქართული, რუსული<br><b>ტელეფონი:</b> (+995) 557 027040; (+995) 595 911273<br><b>სამუშაო საათები:</b> 24/7<br><b>დამატებითი ინფორმაცია:</b> მინივენი nissan elgrand. საწვავის ტიპი: ბენზინი/გაზი, მგზავრთა რაოდენობა 7+1. სავარძლები ბრუნავს რაც საშუალებას იძლევა მოაწყოთ სურვილისამებრ.", images: ['http://minivenebi.ge/uploads/posts/2016-01/1454186611_miniveni.jpg'], destinations: ["ზოგადი"] }
+            ];
+
+            const fleetGrid = document.getElementById('fleet-grid');
+            const modal = document.getElementById('fleet-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMainImage = document.getElementById('modal-main-image');
+            const modalThumbnails = document.getElementById('modal-thumbnails');
+            const modalDescription = document.getElementById('modal-description');
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            const destinationFiltersContainer = document.getElementById('destination-filters');
+
+            let currentFilter = 'ყველა';
+            let itemsToShow = 9;
+            let filteredFleet = [];
+
+            function renderFleet() {
+                fleetGrid.innerHTML = '';
+                filteredFleet = fleetData.filter(car => 
+                    currentFilter === 'ყველა' || car.destinations.includes(currentFilter)
+                );
+
+                const items = filteredFleet.slice(0, itemsToShow);
+
+                items.forEach((vehicle) => {
+                    const card = document.createElement('div');
+                    card.className = 'card bg-white rounded-lg overflow-hidden shadow-lg';
+                    card.dataset.originalIndex = fleetData.indexOf(vehicle);
+                    
+                    card.innerHTML = `
+                        <img src="${vehicle.images[0]}" alt="${vehicle.title}" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2 georgian-text">${vehicle.title}</h3>
+                            <p class="text-gray-700 mb-4 georgian-text">${vehicle.details}</p>
+                            <span class="text-blue-600 font-semibold georgian-text">ვრცლად...</span>
+                        </div>
+                    `;
+                    fleetGrid.appendChild(card);
+                });
+
+                if (itemsToShow >= filteredFleet.length || filteredFleet.length <= 9) {
+                    loadMoreBtn.style.display = 'none';
+                } else {
+                    loadMoreBtn.style.display = 'inline-block';
+                }
+            }
+            
+            function createDestinationFilters() {
+                const destinations = ['ყველა', ...new Set(fleetData.flatMap(car => car.destinations))];
+                destinations.forEach(dest => {
+                    if (dest === 'ზოგადი') return;
+                    const filterBtn = document.createElement('a');
+                    filterBtn.href = "#fleet";
+                    filterBtn.className = 'smooth-scroll destination-filter text-gray-700 hover:text-blue-600';
+                    filterBtn.textContent = dest;
+                    if (dest === 'ყველა') {
+                        filterBtn.classList.add('active');
+                    }
+                    destinationFiltersContainer.appendChild(filterBtn);
+                });
+            }
+
+            destinationFiltersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('destination-filter')) {
+                    destinationFiltersContainer.querySelectorAll('.destination-filter').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilter = e.target.textContent;
+                    itemsToShow = 9;
+                    renderFleet();
+                }
+            });
+
+            loadMoreBtn.addEventListener('click', () => {
+                itemsToShow += 9;
+                renderFleet();
+            });
+
+            fleetGrid.addEventListener('click', function(e) {
+                const card = e.target.closest('.card');
+                if (!card) return;
+
+                const vehicleIndex = card.dataset.originalIndex;
+                const vehicle = fleetData[vehicleIndex];
+
+                modalTitle.textContent = vehicle.title;
+                modalDescription.innerHTML = vehicle.fullDescription;
+
+                const imageSet = [...vehicle.images];
+                if(imageSet.length < 3) {
+                    imageSet.push('https://placehold.co/800x600/e2e8f0/4a5568?text=Interior');
+                    imageSet.push('https://placehold.co/800x600/e2e8f0/4a5568?text=Side+View');
+                }
+                
+                modalMainImage.src = imageSet[0];
+                modalThumbnails.innerHTML = ''; 
+
+                imageSet.forEach((imgSrc, thumbIndex) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.alt = `${vehicle.title} thumbnail ${thumbIndex + 1}`;
+                    thumb.className = 'thumbnail w-full h-20 object-cover rounded';
+                    if (thumbIndex === 0) thumb.classList.add('active');
+                    thumb.dataset.fullsrc = imgSrc;
+                    thumb.onerror = function() { this.onerror=null; this.src='https://placehold.co/100x100/cccccc/ffffff?text=N/A'; };
+                    modalThumbnails.appendChild(thumb);
+                });
+
+                modal.classList.add('visible');
+            });
+
+            modalThumbnails.addEventListener('click', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    modalMainImage.src = e.target.dataset.fullsrc;
+                    modalThumbnails.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                }
+            });
+
+            function closeModal() {
+                modal.classList.remove('visible');
+            }
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('a.smooth-scroll').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Initial setup
+            createDestinationFilters();
+            renderFleet();
+        });
+    </script>
+
+</body>
+</html>
